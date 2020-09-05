@@ -1,3 +1,4 @@
+# https://github.com/localstack/localstack could also be used to speed-up dev/test
 terraform {
   required_providers {
     aws = {
@@ -20,7 +21,8 @@ provider "aws" {
   secret_key                  = "mock_secret_key"
 }
 
-provider "infracost" {}
+# TODO Enable once we have released terraform-provider-infracost
+# provider "infracost" {}
 
 data "aws_region" "current" {}
 
