@@ -1,2 +1,3 @@
-# ci-demo
-Demo repo for infracost CI integrations
+# Infracost CI Demo
+
+Demo repo for infracost CI systems

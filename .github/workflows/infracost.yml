@@ -1,0 +1,29 @@
+on:
+  push:
+    paths:
+    - '**.tf'
+    - '**.tfvars'
+jobs:
+  infracost:
+    runs-on: ubuntu-latest
+    name: Show infracost diff
+    steps:
+    - name: Checkout master branch
+      uses: actions/checkout@v2
+      with:
+        ref: master
+        path: master
+    - name: Checkout pull request branch
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        path: pull_request
+    - name: Run infracost diff
+      uses: infracost/infracost-gh-action@master
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        ##### You should only need to modify the following #####
+        terraform_dir: terraform
