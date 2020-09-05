@@ -11,7 +11,7 @@ resource "aws_ebs_volume" "storage_option_1" {
   availability_zone = var.availability_zone_names[0]
   type              = "io1"
   size              = 15
-  iops              = 100
+  iops              = 200
 }
 
 resource "aws_ebs_volume" "storage_option_2" {
@@ -29,13 +29,14 @@ resource "aws_nat_gateway" "nat" {
   subnet_id     = var.aws_subnet_ids[0]
 }
 
-resource "infracost_aws_nat_gateway" "nat" {
-  resources = [aws_nat_gateway.nat.id]
+# TODO Enable once we have released terraform-provider-infracost
+# resource "infracost_aws_nat_gateway" "nat" {
+#   resources = [aws_nat_gateway.nat.id]
 
-  monthly_gb_data_processed {
-    value = 100
-  }
-}
+#   monthly_gb_data_processed {
+#     value = 100
+#   }
+# }
 
 resource "aws_lambda_function" "lambda" {
   function_name = "lambda_function_name"
@@ -45,14 +46,15 @@ resource "aws_lambda_function" "lambda" {
   memory_size   = 512
 }
 
-resource "infracost_aws_lambda_function" "lambda" {
-  resources = [aws_lambda_function.lambda.id]
+# TODO Enable once we have released terraform-provider-infracost
+# resource "infracost_aws_lambda_function" "lambda" {
+#   resources = [aws_lambda_function.lambda.id]
 
-  monthly_requests {
-    value = 100000
-  }
+#   monthly_requests {
+#     value = 100000
+#   }
 
-  average_request_duration {
-    value = 350
-  }
-}
+#   average_request_duration {
+#     value = 350
+#   }
+# }
