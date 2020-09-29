@@ -11,7 +11,7 @@ resource "aws_ebs_volume" "storage_option_1" {
   availability_zone = var.availability_zone_names[0]
   type              = "io1"
   size              = 15
-  iops              = 500
+  iops              = 600
 }
 
 resource "aws_ebs_volume" "storage_option_2" {
