@@ -4,10 +4,6 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
     }
-    # TODO Enable once we have released terraform-provider-infracost
-    # infracost = {
-    #   source = "infracost.io/infracost/infracost"
-    # }
   }
 }
 
@@ -20,9 +16,6 @@ provider "aws" {
   access_key                  = "mock_access_key"
   secret_key                  = "mock_secret_key"
 }
-
-# TODO Enable once we have released terraform-provider-infracost
-# provider "infracost" {}
 
 data "aws_region" "current" {}
 

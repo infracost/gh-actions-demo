@@ -3,6 +3,7 @@ on:
     paths:
     - '**.tf'
     - '**.tfvars'
+    - '**.tfvars.json'
 jobs:
   infracost:
     runs-on: ubuntu-latest
@@ -26,5 +27,6 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        ##### You should only need to modify the following #####
-        terraform_dir: terraform
+        tfdir: terraform
+        tfflags: -var-file=myvars.tfvars
+        percentage_threshold: 0.5
