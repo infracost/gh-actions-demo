@@ -1,2 +1,2 @@
 iops = 300
-itype = "t3.micro"
+instance_type = "a1.medium"
