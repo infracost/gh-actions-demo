@@ -21,7 +21,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        entrypoint: /diff.sh # Do not change
+        entrypoint: /scripts/ci/diff.sh # Do not change
         tfdir: terraform
         tfflags: -var-file=myvars.tfvars
         percentage_threshold: 0.5
