@@ -12,7 +12,7 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v2
       with:
-        fetch-depth: 0 # Needed as we also need the default branch
+        fetch-depth: 50 # Needed as we also need the default branch
     - name: Run infracost diff
       uses: infracost/infracost-gh-action@ci_scripts
       env:
