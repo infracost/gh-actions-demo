@@ -25,4 +25,4 @@ jobs:
         tfdir: terraform
         tfflags: -var-file=myvars.tfvars
         percentage_threshold: 1
-        use_tfstate: true
+        use_tfstate: false
