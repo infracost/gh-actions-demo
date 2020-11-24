@@ -1,2 +1,2 @@
-iops = 1700
+iops = 200
 instance_type = "a1.medium"
