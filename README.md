@@ -1,3 +1,3 @@
 # Infracost CI Demo
 
-Demo repo for infracost CI systems
+Demo of cost estimates in GitHub pull requests, uses the [Infracost GitHub Action](https://github.com/marketplace/actions/run-infracost).
