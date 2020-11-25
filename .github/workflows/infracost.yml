@@ -9,24 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     name: Show infracost diff
     steps:
-    - name: Checkout master branch
+    - name: Check out repository
       uses: actions/checkout@v2
-      with:
-        ref: master
-        path: master
-    - name: Checkout pull request branch
-      uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        path: pull_request
     - name: Run infracost diff
-      uses: infracost/infracost-gh-action@add_tfstate
+      uses: infracost/infracost-gh-action@master
       env:
         INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        entrypoint: /scripts/ci/diff.sh # Do not change
         tfdir: terraform
         tfflags: -var-file=myvars.tfvars
-        percentage_threshold: 0.5
+        percentage_threshold: 1
