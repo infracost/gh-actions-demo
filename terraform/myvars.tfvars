@@ -1,1 +1,1 @@
-instance_type = "a1.medium"
+instance_type = "a1.large"
