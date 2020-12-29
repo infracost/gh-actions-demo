@@ -1,5 +1,9 @@
 on:
   push:
+    # This action runs on PRs, so no need to rerun it on master/main
+    branches-ignore:
+      - master
+      - main
     paths:
     - '**.tf'
     - '**.tfvars'
@@ -15,11 +19,7 @@ jobs:
       uses: infracost/infracost-gh-action@master
       env:
         INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         entrypoint: /scripts/ci/diff.sh # Do not change
         tfdir: terraform
-        tfflags: -var-file=myvars.tfvars
-        percentage_threshold: 1
