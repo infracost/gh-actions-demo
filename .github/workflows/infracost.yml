@@ -23,3 +23,4 @@ jobs:
       with:
         entrypoint: /scripts/ci/diff.sh # Do not change
         tfdir: terraform
+        usage_file: infracost-usage.yml
