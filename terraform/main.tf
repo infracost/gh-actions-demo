@@ -6,19 +6,20 @@ provider "aws" {
   secret_key                  = "mock_secret_key"
 }
 
-resource "aws_instance" "web_app" {
-  ami           = "ami-674cbc1e"
-  instance_type = "m5.4xlarge"              # <<<<< Try changing this to m5.8xlarge to compare the costs
+module "ec2-instance" {
+  source  = "app.terraform.io/infracost/ec2-instance/aws"
+  version = "2.16.0"
 
-  root_block_device {
-    volume_size = 50
-  }
+  name                   = "web-app"
+  instance_count         = 1
 
-  ebs_block_device {
-    device_name = "my_data"
-    volume_type = "io1"                     # <<<<< Try changing this to gp2 to compare costs
-    volume_size = 1000
-    iops        = 800
+  ami                    = "ami-674cbc1e"
+  instance_type          = "t2.micro"
+  subnet_id              = "subnet-eddcdzz4"
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
   }
 }
 

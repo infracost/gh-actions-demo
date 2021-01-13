@@ -16,10 +16,11 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v2
     - name: Run infracost diff
-      uses: infracost/infracost-gh-action@master
+      uses: infracost/infracost-gh-action@gh-action-debug
       env:
         INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TERRAFORM_CLOUD_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
       with:
         entrypoint: /scripts/ci/diff.sh # Do not change
         tfdir: terraform
