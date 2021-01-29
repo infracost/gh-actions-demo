@@ -1,9 +1,5 @@
 on:
-  push:
-    # This action runs on PRs, so no need to rerun it on master/main
-    branches-ignore:
-      - master
-      - main
+  pull_request:
     paths:
     - '**.tf'
     - '**.tfvars'
