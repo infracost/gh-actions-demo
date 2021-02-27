@@ -4,10 +4,10 @@ on:
     branches-ignore:
       - master
       - main
-    paths:
-    - '**.tf'
-    - '**.tfvars'
-    - '**.tfvars.json'
+    #paths:
+    #- '**.tf'
+    #- '**.tfvars'
+    #- '**.tfvars.json'
 jobs:
   infracost:
     runs-on: ubuntu-latest
