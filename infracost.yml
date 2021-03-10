@@ -1,6 +1,0 @@
-projects:
-  terraform:
-    - dir: terraform
-      usage_file: infracost-usage.yml
-outputs:
-  - format: table
