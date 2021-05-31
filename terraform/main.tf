@@ -11,7 +11,7 @@ resource "aws_instance" "web_app" {
   instance_type = "m5.4xlarge"              # <<<<< Try changing this to m5.8xlarge to compare the costs
 
   root_block_device {
-    volume_size = 50
+    volume_size = 100
   }
 
   ebs_block_device {
