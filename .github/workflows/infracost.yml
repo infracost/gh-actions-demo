@@ -19,4 +19,4 @@ jobs:
       with:
         path: terraform
         usage_file: infracost-usage.yml
-        #entrypoint: /scripts/ci/diff.sh1 
+        entrypoint: /scripts/ci/diff.sh1 
