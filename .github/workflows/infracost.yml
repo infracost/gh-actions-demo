@@ -17,6 +17,5 @@ jobs:
         INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        entrypoint: /scripts/ci/diff.sh # Do not change
         path: terraform
         usage_file: infracost-usage.yml
