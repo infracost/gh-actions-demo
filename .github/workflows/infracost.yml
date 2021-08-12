@@ -12,11 +12,11 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v2
     - name: Run infracost diff
-      uses: infracost/infracost-gh-action@default_entrypoint
+      uses: infracost/infracost-gh-action@default_entrypoint2
       env:
         INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         path: terraform
         usage_file: infracost-usage.yml
-        entrypoint: /scripts/ci/diff.sh1 # Do not change
+        #entrypoint: /scripts/ci/diff.sh1 
