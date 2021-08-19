@@ -1,0 +1,5 @@
+version: 0.1
+
+projects:
+  - path: terraform
+    usage_file: infracost-usage.yml

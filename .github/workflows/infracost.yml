@@ -17,5 +17,4 @@ jobs:
         INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        path: terraform
-        usage_file: infracost-usage.yml
+        config_file: infracost.yml
