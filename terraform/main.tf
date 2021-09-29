@@ -30,4 +30,4 @@ resource "aws_lambda_function" "hello_world" {
   memory_size   = 1024                      # <<<<< Try changing this to 512 to compare costs
 }
 
-# test change 2
+# test change 3
