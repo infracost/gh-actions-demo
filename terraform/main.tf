@@ -21,7 +21,7 @@ resource "aws_instance" "web_app" {
     iops        = 800
   }
 }
-# This shouldn't trigger an updated comment
+# This shouldn't trigger an updated comment: Updated comment
 resource "aws_lambda_function" "hello_world" {
   function_name = "hello_world"
   role          = "arn:aws:lambda:us-east-1:account-id:resource-id"
