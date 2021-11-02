@@ -22,6 +22,8 @@ resource "aws_instance" "web_app" {
   }
 }
 
+
+
 resource "aws_lambda_function" "hello_world" {
   function_name = "hello_world"
   role          = "arn:aws:lambda:us-east-1:account-id:resource-id"
