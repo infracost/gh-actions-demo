@@ -44,7 +44,7 @@ jobs:
         run: infracost breakdown --path plan.json --format json > breakdown.json
 
       - name: "Infracost output"
-        run: infracost output --format diff --path breakdown.json > output.md
+        run: infracost output --no-color --format diff --path breakdown.json > output.md
 
       - name: "Post comment"
         uses: marocchino/sticky-pull-request-comment@v2
