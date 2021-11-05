@@ -9,13 +9,44 @@ jobs:
     runs-on: ubuntu-latest
     name: Show infracost diff
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v2
-    - name: Run infracost diff
-      uses: infracost/infracost-gh-action@master
-      env:
-        INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        path: terraform
-        usage_file: infracost-usage.yml
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: "Instance infracost"
+        uses: infracost/setup-infracost@86c9602b5b21487918d76dad260e4eb30d6c7620
+        with:
+          version: 0.9.12
+
+      - name: "Install terraform"
+        uses: hashicorp/setup-terraform@v1
+
+      - name: "Terraform init"
+        id: init
+        run: terraform init
+        working-directory: terraform
+
+      - name: "Terraform plan"
+        id: plan
+        run: terraform plan -out plan.tfplan
+        working-directory: terraform
+
+      - name: "Terraform show"
+        id: show
+        run: terraform show -json plan.tfplan
+        working-directory: terraform
+
+      - name: "Save Plan JSON"
+        run: echo '${{ steps.show.outputs.stdout }}' > plan.json # Do not change
+
+      - name: "Infracost breakdown"
+        env:
+          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+        run: infracost breakdown --path plan.json --format json > breakdown.json
+
+      - name: "Infracost output"
+        run: infracost output --format diff --path breakdown.json > output.md
+
+      - name: "Post comment"
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: output.md
