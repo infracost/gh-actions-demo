@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: "Install infracost"
-        uses: infracost/setup-infracost@b408f8237d407b8299f23b4ef10870132592e69b
+        uses: infracost/setup-infracost@54c4a1e595cb343b6f5144eade305d5a5b63fb3d
         with:
           version: latest
           api_key: ${{ secrets.INFRACOST_API_KEY }}
