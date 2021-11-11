@@ -1,9 +1,4 @@
-on:
-  pull_request:
-    paths:
-      - '**.tf'
-      - '**.tfvars'
-      - '**.tfvars.json'
+on: [pull_request]
 jobs:
   infracost:
     runs-on: ubuntu-latest
@@ -38,10 +33,12 @@ jobs:
           version: latest
 
       - name: Infracost breakdown
-        run: infracost breakdown --path plan.json --format json --out-file infracost.json
+        run: |
+          infracost breakdown --path plan.json --format json --out-file infracost1.json
+          infracost breakdown --path plan.json --format json --out-file infracost2.json
 
       - name: Infracost output
-        run: infracost output --path infracost.json --no-color --format github-comment --out-file infracost-comment.md
+        run: infracost output --path "infracost*.json" --format github-comment --out-file infracost-comment.md
 
       - name: Post comment
         uses: marocchino/sticky-pull-request-comment@v2
