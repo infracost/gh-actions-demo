@@ -19,3 +19,4 @@ jobs:
       with:
         path: terraform
         usage_file: infracost-usage.yml
+        post_condition: '{"has_diff": true}'
