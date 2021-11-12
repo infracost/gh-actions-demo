@@ -1,1 +1,16 @@
+# Terraform artifacts
 .terraform
+.terraform.lock.hcl
+**/.terraform/**
+**/.terragrunt-cache/**
+examples/*/plan.save
+examples/*/tfplan.binary
+examples/*/plan.json
+examples/*/example.json
+examples/*/example.save
+
+# Infracost artifacts
+**/.infracost
+
+# IDEA
+.idea

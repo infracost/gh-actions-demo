@@ -2,6 +2,7 @@ on:
   pull_request:
     paths:
     - '**.tf'
+    - '**.hcl'
     - '**.tfvars'
     - '**.tfvars.json'
 jobs:
@@ -11,36 +12,23 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
-
-      - name: "Install infracost"
-        uses: infracost/setup-infracost@b408f8237d407b8299f23b4ef10870132592e69b
-        with:
-          version: latest
-          api_key: ${{ secrets.INFRACOST_API_KEY }}
-
-      - name: "Install terraform"
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-
-      - name: "Terraform init"
-        id: init
-        run: terraform init
-        working-directory: terraform
-
-      - name: "Terraform plan"
-        id: plan
-        run: terraform plan -out plan.tfplan
-        working-directory: terraform
-
-      - name: "Terraform show"
-        id: show
-        run: terraform show -json plan.tfplan
-        working-directory: terraform
-
-      - name: "Save Plan JSON"
-        run: echo '${{ steps.show.outputs.stdout }}' > plan.json # Do not change
-
-      - name: "Infracost breakdown"
-        run: infracost breakdown --path plan.json --format json --out-file breakdown.json
+        with:
+          terraform_version: latest
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1.1.0
+        with:
+          terragrunt_version: latest
+      - name: Setup Infracost
+        uses: infracost/setup-infracost@master
+        with:
+          api_key: ${{ secrets.INFRACOST_API_KEY }}
+          version: latest
+      - name: Infracost Breakdown
+        run: infracost breakdown --no-color --path ./terragrunt --format json --out-file breakdown.json --log-level trace
+        env:
+          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
 
       - name: "Infracost output"
         run: infracost output --no-color --format github-comment --path breakdown.json --out-file comment.md
