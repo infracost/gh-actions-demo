@@ -18,7 +18,7 @@ jobs:
           terraform_version: latest
           terraform_wrapper: false
       - name: Setup Infracost
-        uses: infracost/actions/setup@master
+        uses: infracost/actions/setup@e051cbffdeed295ade51bd78b76bbc334610630e
         with:
           api_key: ${{ secrets.INFRACOST_API_KEY }}
           version: latest
