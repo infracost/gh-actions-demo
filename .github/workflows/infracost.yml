@@ -16,17 +16,14 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: latest
-      - name: Setup Terragrunt
-        uses: autero1/action-terragrunt@v1.1.0
-        with:
-          terragrunt_version: latest
+          terraform_wrapper: false
       - name: Setup Infracost
         uses: infracost/setup-infracost@master
         with:
           api_key: ${{ secrets.INFRACOST_API_KEY }}
           version: latest
       - name: Infracost Breakdown
-        run: infracost breakdown --no-color --path ./terragrunt --format json --out-file breakdown.json --log-level trace
+        run: infracost breakdown --no-color --path ./bigplan.json --format json --out-file breakdown.json --log-level trace
         env:
           INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
 
