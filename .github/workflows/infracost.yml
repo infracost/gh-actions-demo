@@ -34,6 +34,7 @@ jobs:
 
       - name: Infracost breakdown
         run: |
+          jq --version
           infracost breakdown --path plan.json --format json --out-file infracost1.json
           infracost breakdown --path plan.json --format json --out-file infracost2.json
 
