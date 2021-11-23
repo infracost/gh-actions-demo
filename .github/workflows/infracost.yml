@@ -1,21 +1,52 @@
-on:
-  pull_request:
-    paths:
-    - '**.tf'
-    - '**.tfvars'
-    - '**.tfvars.json'
+# The GitHub Actions docs (https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on)
+# describe other options for `on`, `pull_request` is a good default.
+on: [pull_request]
 jobs:
   infracost:
     runs-on: ubuntu-latest
-    name: Show infracost diff
+    name: Run Infracost
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v2
-    - name: Run infracost diff
-      uses: infracost/infracost-gh-action@master
-      env:
-        INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        path: terraform
-        usage_file: infracost-usage.yml
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      # Typically the Infracost actions will be used in conjunction with
+      # https://github.com/hashicorp/setup-terraform. Subsequent steps in
+      # can run Terraform commands as they would in the shell.
+      - name: Install terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false # This is required so the `terraform show` command outputs valid JSON
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform plan
+        run: terraform plan -out tfplan.binary
+        working-directory: terraform
+
+      - name: Terraform show
+        run: terraform show -json tfplan.binary > /tmp/plan.json
+        working-directory: terraform
+
+      # Install the Infracost CLI, see https://github.com/infracost/actions/tree/master/setup
+      # for other options such as version, and pricing_api_endpoint (for self-hosted users).
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v1
+        with:
+          api_key: ${{ secrets.INFRACOST_API_KEY }}
+
+      # Generate Infracost JSON output, the following docs might be useful:
+      # https://www.infracost.io/docs/multi_project/config_file for multi-project/workspaces.
+      # https://www.infracost.io/docs/multi_project/report to combine Infracost JSON files.
+      - name: Generate Infracost JSON
+        run: infracost breakdown --path /tmp/plan.json --format json --out-file /tmp/infracost.json
+
+      # See https://github.com/infracost/actions/tree/master/comment
+      # for other inputs such as behavior and target-type.
+      - name: Post Infracost comment
+        uses: infracost/actions/comment@v1
+        with:
+          path: /tmp/infracost.json
+          behavior: update
+
