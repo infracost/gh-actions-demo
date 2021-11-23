@@ -21,7 +21,7 @@ jobs:
         working-directory: terraform
 
       - name: Terraform show
-        run: terraform show -json tfplan.binary > plan.json
+        run: terraform show -json tfplan.binary > /tmp/plan.json
         working-directory: terraform
 
       - name: Setup Infracost
@@ -30,9 +30,9 @@ jobs:
           api_key: ${{ secrets.INFRACOST_API_KEY }}
 
       - name: Infracost breakdown
-        run: infracost breakdown --path plan.json --format json --out-file infracost.json
+        run: infracost breakdown --path /tmp/plan.json --format json --out-file /tmp/infracost.json
       
       - name: Infracost comment
         uses: infracost/actions/comment@v1
         with: 
-          path: infracost.json
+          path: /tmp/infracost.json
