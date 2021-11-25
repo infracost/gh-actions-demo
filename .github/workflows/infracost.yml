@@ -34,7 +34,7 @@ jobs:
       - name: Setup Infracost
         uses: infracost/actions/setup@v1
         with:
-          api_key: ${{ secrets.INFRACOST_API_KEY }}
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
 
       # Generate Infracost JSON output, the following docs might be useful:
       # https://www.infracost.io/docs/multi_project/config_file for multi-project/workspaces.
