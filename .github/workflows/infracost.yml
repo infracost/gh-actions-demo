@@ -21,6 +21,6 @@ jobs:
       - name: Infracost
         uses: infracost/actions@v1
         with:
-          api_key: ${{ secrets.INFRACOST_API_KEY }}
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
           path: ./terraform
           behavior: hide-and-create
