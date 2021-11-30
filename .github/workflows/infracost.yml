@@ -23,4 +23,4 @@ jobs:
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
           path: ./terraform
-          behavior: hide-and-create
+          behavior: hide-and-new
