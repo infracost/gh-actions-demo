@@ -1,10 +1,5 @@
 on:
-  pull_request:
-    paths:
-    - '**.tf'
-    - '**.hcl'
-    - '**.tfvars'
-    - '**.tfvars.json'
+  [pull_request]
 jobs:
   infracost:
     runs-on: ubuntu-latest
@@ -17,20 +12,9 @@ jobs:
         with:
           terraform_version: latest
           terraform_wrapper: false
-      - name: Setup Infracost
-        uses: infracost/setup-infracost@master
+      - name: Infracost
+        uses: infracost/actions@v1
         with:
           api_key: ${{ secrets.INFRACOST_API_KEY }}
-          version: latest
-      - name: Infracost Breakdown
-        run: infracost breakdown --no-color --path ./bigplan.json --format json --out-file breakdown.json --log-level trace
-        env:
-          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
-
-      - name: "Infracost output"
-        run: infracost output --no-color --format github-comment --path breakdown.json --out-file comment.md
-
-      - name: "Post comment"
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          path: comment.md
+          path: ./terraform
+          behavior: hide-and-create
