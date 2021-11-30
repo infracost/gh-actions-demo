@@ -1,14 +1,14 @@
-on:
-  pull_request:
-    paths:
-    - '**.tf'
-    - '**.hcl'
-    - '**.tfvars'
-    - '**.tfvars.json'
+# The GitHub Actions docs (https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on)
+# describe other options for 'on', 'pull_request' is a good default.
+on: [pull_request]
+
 jobs:
   infracost:
-    runs-on: ubuntu-latest
-    name: Show infracost diff
+    runs-on: ubuntu-latest # The following are JavaScript actions (not Docker)
+    env:
+      working-directory: terraform # Update this!
+
+    name: Run Infracost
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
