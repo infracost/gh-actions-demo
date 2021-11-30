@@ -1,12 +1,18 @@
+
 on:
   [pull_request]
+
 jobs:
   infracost:
-    runs-on: ubuntu-latest
-    name: Show infracost diff
+    runs-on: ubuntu-latest # The following are JavaScript actions (not Docker)
+    env:
+      working-directory: terraform # Update this!
+
+    name: Run Infracost
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
