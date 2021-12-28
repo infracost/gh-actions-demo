@@ -1,0 +1,53 @@
+name: Terraform Deploy AWS
+
+env:
+  TFPath: terraform/
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ${{ env.TFPath }}
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: ${{ env.TFPath }}
+
+      - name: Terraform Plan
+        id: plan
+        #        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -out plan.tfplan
+        continue-on-error: true
+        working-directory: ${{ env.TFPath }}
+
+      - name: Run infracost diff
+        id: cost
+        uses: infracost/infracost-gh-action@master
+        env:
+          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INFRACOST_TERRAFORM_CLOUD_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        with:
+          path: ${{ env.TFPath }}
+          show_skipped: true
+          post_condition: '{"update": true}'
+
+      - name: "Infracost output"
+        run: echo '${{ steps.cost.outputs.total_monthly_cost }}'
