@@ -58,7 +58,7 @@ jobs:
         with:
           path: /tmp/infracost.json
           # Choose the commenting behavior, 'update' is a good default:
-          behavior: update # Create a single comment and update it. The "quietest" option.                 
+          behavior: update # Create a single comment and update it. The "quietest" option.
           # behavior: delete-and-new # Delete previous comments and create a new one.
           # behavior: hide-and-new # Minimize previous comments and create a new one.
           # behavior: new # Create a new cost estimate comment on every push.
