@@ -1,0 +1,33 @@
+# The GitHub Actions docs (https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on)
+# describe other options for 'on', 'pull_request' is a good default.
+on: [pull_request_target]
+jobs:
+  infracost:
+    runs-on: ubuntu-latest # The following are JavaScript actions (not Docker)
+    env:
+      working-directory: terraform # Update this!
+
+    name: Run Infracost
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      # Generate Infracost JSON output, the following docs might be useful:
+      # Multi-project/workspaces: https://www.infracost.io/docs/multi_project/config_file
+      # Combine Infracost JSON files: https://www.infracost.io/docs/multi_project/report
+      - name: mock infracost JSON
+        run: |
+          echo '{"version":"0.2","currency":"USD","projects":[{"name":"infracost/gh-actions-demo/terraform/plan.json","metadata":{"path":"plan.json","type":"terraform_plan_json","vcsRepoUrl":"git@github.com:infracost/gh-actions-demo.git","vcsSubPath":"terraform/plan.json"},"pastBreakdown":{"resources":[],"totalHourlyCost":"0","totalMonthlyCost":"0"},"breakdown":{"resources":[{"name":"aws_instance.web_app","metadata":{},"hourlyCost":"1.020054794520547939","monthlyCost":"744.64","costComponents":[{"name":"Instance usage (Linux/UNIX, on-demand, m5.4xlarge)","unit":"hours","hourlyQuantity":"1","monthlyQuantity":"730","price":"0.768","hourlyCost":"0.768","monthlyCost":"560.64"}],"subresources":[{"name":"root_block_device","metadata":{},"hourlyCost":"0.00958904109589041","monthlyCost":"7","costComponents":[{"name":"Storage (general purpose SSD, gp2)","unit":"GB","hourlyQuantity":"0.0958904109589041","monthlyQuantity":"70","price":"0.1","hourlyCost":"0.00958904109589041","monthlyCost":"7"}]},{"name":"ebs_block_device[0]","metadata":{},"hourlyCost":"0.242465753424657529","monthlyCost":"177","costComponents":[{"name":"Storage (provisioned IOPS SSD, io1)","unit":"GB","hourlyQuantity":"1.3698630136986301","monthlyQuantity":"1000","price":"0.125","hourlyCost":"0.1712328767123287625","monthlyCost":"125"},{"name":"Provisioned IOPS","unit":"IOPS","hourlyQuantity":"1.0958904109589041","monthlyQuantity":"800","price":"0.065","hourlyCost":"0.0712328767123287665","monthlyCost":"52"}]}]},{"name":"aws_lambda_function.hello_world","metadata":{},"hourlyCost":null,"monthlyCost":null,"costComponents":[{"name":"Requests","unit":"1M requests","hourlyQuantity":null,"monthlyQuantity":null,"price":"0.2","hourlyCost":null,"monthlyCost":null},{"name":"Duration","unit":"GB-seconds","hourlyQuantity":null,"monthlyQuantity":null,"price":"0.0000166667","hourlyCost":null,"monthlyCost":null}]}],"totalHourlyCost":"1.020054794520547939","totalMonthlyCost":"744.64"},"diff":{"resources":[{"name":"aws_instance.web_app","metadata":{},"hourlyCost":"1.020054794520547939","monthlyCost":"744.64","costComponents":[{"name":"Instance usage (Linux/UNIX, on-demand, m5.4xlarge)","unit":"hours","hourlyQuantity":"1","monthlyQuantity":"730","price":"0.768","hourlyCost":"0.768","monthlyCost":"560.64"}],"subresources":[{"name":"root_block_device","metadata":{},"hourlyCost":"0.00958904109589041","monthlyCost":"7","costComponents":[{"name":"Storage (general purpose SSD, gp2)","unit":"GB","hourlyQuantity":"0.0958904109589041","monthlyQuantity":"70","price":"0.1","hourlyCost":"0.00958904109589041","monthlyCost":"7"}]},{"name":"ebs_block_device[0]","metadata":{},"hourlyCost":"0.242465753424657529","monthlyCost":"177","costComponents":[{"name":"Storage (provisioned IOPS SSD, io1)","unit":"GB","hourlyQuantity":"1.3698630136986301","monthlyQuantity":"1000","price":"0.125","hourlyCost":"0.1712328767123287625","monthlyCost":"125"},{"name":"Provisioned IOPS","unit":"IOPS","hourlyQuantity":"1.0958904109589041","monthlyQuantity":"800","price":"0.065","hourlyCost":"0.0712328767123287665","monthlyCost":"52"}]}]},{"name":"aws_lambda_function.hello_world","metadata":{},"hourlyCost":"0","monthlyCost":"0","costComponents":[{"name":"Requests","unit":"1M requests","hourlyQuantity":"0","monthlyQuantity":"0","price":"0.2","hourlyCost":"0","monthlyCost":"0"},{"name":"Duration","unit":"GB-seconds","hourlyQuantity":"0","monthlyQuantity":"0","price":"0.0000166667","hourlyCost":"0","monthlyCost":"0"}]}],"totalHourlyCost":"1.020054794520547939","totalMonthlyCost":"744.64"},"summary":{"totalDetectedResources":2,"totalSupportedResources":2,"totalUnsupportedResources":0,"totalUsageBasedResources":2,"totalNoPriceResources":0,"unsupportedResourceCounts":{},"noPriceResourceCounts":{}}}],"totalHourlyCost":"1.020054794520547939","totalMonthlyCost":"744.64","pastTotalHourlyCost":"0","pastTotalMonthlyCost":"0","diffTotalHourlyCost":"1.020054794520547939","diffTotalMonthlyCost":"744.64","timeGenerated":"2021-12-30T10:31:47.230983Z","summary":{"totalDetectedResources":2,"totalSupportedResources":2,"totalUnsupportedResources":0,"totalUsageBasedResources":2,"totalNoPriceResources":0,"unsupportedResourceCounts":{},"noPriceResourceCounts":{}}}' > /tmp/infracost.json
+        working-directory: ${{ env.working-directory }}
+
+      # See https://github.com/infracost/actions/tree/master/comment
+      # for other inputs such as target-type.
+      - name: Post Infracost comment
+        uses: infracost/actions/comment@v1
+        with:
+          path: /tmp/infracost.json
+          # Choose the commenting behavior, 'update' is a good default:
+          behavior: update # Create a single comment and update it. The "quietest" option.
+          # behavior: delete-and-new # Delete previous comments and create a new one.
+          # behavior: hide-and-new # Minimize previous comments and create a new one.
+          # behavior: new # Create a new cost estimate comment on every push.
