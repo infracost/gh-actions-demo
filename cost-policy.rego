@@ -2,7 +2,7 @@ package infracost
 
 # totalDiff
 deny[msg] {
-	maxDiff = 1500.0
+	maxDiff = 2000.0
 	to_number(input.diffTotalMonthlyCost) >= maxDiff
 
 	msg := sprintf(
@@ -16,7 +16,7 @@ deny[msg] {
 	r := input.projects[_].breakdown.resources[_]
 	startswith(r.name, "aws_instance.")
 
-	maxHourlyCost := 2.0
+	maxHourlyCost := 2.50
 	to_number(r.hourlyCost) > maxHourlyCost
 
 	msg := sprintf(
