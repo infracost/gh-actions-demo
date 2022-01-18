@@ -1,26 +1,20 @@
-# The GitHub Actions docs (https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#on)
-# describe other options for 'on', 'pull_request' is a good default.
 on: [pull_request]
 jobs:
   infracost:
-    runs-on: ubuntu-latest # The following are JavaScript actions (not Docker)
+    runs-on: ubuntu-latest
     env:
-      working-directory: terraform # Update this!
+      working-directory: terraform
 
     name: Run Infracost
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      # Typically the Infracost actions will be used in conjunction with
-      # https://github.com/hashicorp/setup-terraform. Subsequent steps
-      # can run Terraform commands as they would in the shell.
+      # Run Terraform
       - name: Install terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_wrapper: false # This is recommended so the `terraform show` command outputs valid JSON
-
-      # IMPORTANT: add any required steps here to setup cloud credentials so Terraform can run
 
       - name: Terraform init
         run: terraform init
@@ -34,31 +28,35 @@ jobs:
         run: terraform show -json tfplan.binary > plan.json
         working-directory: ${{ env.working-directory }}
 
-      # Install the Infracost CLI, see https://github.com/infracost/actions/tree/master/setup
-      # for other inputs such as version, and pricing-api-endpoint (for self-hosted users).
+      # Run Infracost
       - name: Setup Infracost
         uses: infracost/actions/setup@v1
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-      # Generate Infracost JSON output, the following docs might be useful:
-      # Multi-project/workspaces: https://www.infracost.io/docs/features/config_file
-      # Combine Infracost JSON files: https://www.infracost.io/docs/features/cli_commands/#combined-output-formats
       - name: Generate Infracost JSON
         run: infracost breakdown --path plan.json --format json --usage-file infracost-usage.yml --out-file /tmp/infracost.json
         working-directory: ${{ env.working-directory }}
-        # Env vars can be set using the usual GitHub Actions syntax
-        # env:
-        #   MY_ENV: ${{ secrets.MY_ENV }}
 
-      # See https://github.com/infracost/actions/tree/master/comment
-      # for other inputs such as target-type.
       - name: Post Infracost comment
         uses: infracost/actions/comment@v1
         with:
           path: /tmp/infracost.json
-          # Choose the commenting behavior, 'update' is a good default:
-          behavior: update # Create a single comment and update it. The "quietest" option.
-          # behavior: delete-and-new # Delete previous comments and create a new one.
-          # behavior: hide-and-new # Minimize previous comments and create a new one.
-          # behavior: new # Create a new cost estimate comment on every push.
+          behavior: update
+
+      # Run Open Policy Agent
+      - name: Setup OPA
+        uses: infracost/setup-opa@v1
+
+      - name: Run OPA
+        run: opa eval --input /tmp/infracost.json -d cost-policy.rego --format pretty "data.infracost.deny" | tee /tmp/opa.out
+
+      - name: Check Policies
+        run: |
+          denyReasons=$(</tmp/opa.out)
+          if [ "$denyReasons" != "[]" ]; then
+            echo -e "::error::Cost policy check failed, please check with Alistair Scott before proceeding with the change:\n$denyReasons"
+            exit 1
+          else
+            echo "::info::Cost policy check passed."
+          fi
