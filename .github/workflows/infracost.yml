@@ -46,7 +46,7 @@ jobs:
 
       # Run Open Policy Agent
       - name: Setup OPA
-        uses: infracost/setup-opa@v1
+        uses: open-policy-agent/setup-opa@v1
 
       - name: Run OPA
         run: opa eval --input /tmp/infracost.json -d cost-policy.rego --format pretty "data.infracost.deny" | tee /tmp/opa.out
