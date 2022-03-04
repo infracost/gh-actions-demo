@@ -8,7 +8,7 @@ provider "aws" {
 
 resource "aws_instance" "web_app" {
   ami           = "ami-674cbc1e"
-  instance_type = "m5.4xlarge"              # <<<<< Try changing this to m5.8xlarge to compare the costs
+  instance_type = "m5.4xlarge"
 
   root_block_device {
     volume_size = 70
@@ -18,7 +18,7 @@ resource "aws_instance" "web_app" {
     device_name = "my_data"
     volume_type = "io1"
     volume_size = 3000
-    iops        = 1200                      # <<<<< Try changing this to 10000 to compare costs
+    iops        = 1200
   }
 }
 
@@ -27,5 +27,5 @@ resource "aws_lambda_function" "hello_world" {
   role          = "arn:aws:lambda:us-east-1:account-id:resource-id"
   handler       = "exports.test"
   runtime       = "nodejs12.x"
-  memory_size   = 1024                      # <<<<< Try changing this to 512 to compare costs
+  memory_size   = 1024
 }
