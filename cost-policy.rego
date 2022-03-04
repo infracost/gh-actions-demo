@@ -1,32 +1,38 @@
 package infracost
 
-# totalDiff
-deny[msg] {
-	maxDiff = 2000.0
-	to_number(input.diffTotalMonthlyCost) >= maxDiff
+deny[out] {
+	maxDiff = 1750.0
 
 	msg := sprintf(
 		"Total monthly cost diff must be less than $%.2f (actual diff is $%.2f)",
 		[maxDiff, to_number(input.diffTotalMonthlyCost)],
 	)
+
+  out := {
+    "msg": msg,
+    "failed": to_number(input.diffTotalMonthlyCost) >= maxDiff
+  }
 }
 
-# instanceCost
-deny[msg] {
+
+deny[out] {
 	r := input.projects[_].breakdown.resources[_]
 	startswith(r.name, "aws_instance.")
 
-	maxHourlyCost := 2.50
-	to_number(r.hourlyCost) > maxHourlyCost
+	maxHourlyCost := 2.5
 
 	msg := sprintf(
 		"AWS instances must cost less than $%.2f\\hr (%s costs $%.2f\\hr).",
 		[maxHourlyCost, r.name, to_number(r.hourlyCost)],
 	)
+
+  out := {
+    "msg": msg,
+    "failed": to_number(r.hourlyCost) > maxHourlyCost
+  }
 }
 
-# instanceIOPSCost
-deny[msg] {
+deny[out] {
 	r := input.projects[_].breakdown.resources[_]
 	startswith(r.name, "aws_instance.")
 
@@ -36,10 +42,13 @@ deny[msg] {
 	sr_cc.name == "Provisioned IOPS"
 	iopsHourlyCost := to_number(sr_cc.hourlyCost)
 
-	iopsHourlyCost > baseHourlyCost
-
 	msg := sprintf(
 		"AWS instance IOPS must cost less than compute usage (%s IOPS $%.2f\\hr, usage $%.2f\\hr).",
 		[r.name, iopsHourlyCost, baseHourlyCost],
 	)
+
+  out := {
+    "msg": msg,
+    "failed": 	iopsHourlyCost > baseHourlyCost
+  }
 }

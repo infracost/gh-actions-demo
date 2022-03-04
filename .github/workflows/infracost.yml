@@ -4,6 +4,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: terraform
+      PR_NUMBER: ${{ github.event.pull_request.number }}
 
     name: Run Infracost
     steps:
@@ -30,33 +31,26 @@ jobs:
 
       # Run Infracost
       - name: Setup Infracost
-        uses: infracost/actions/setup@v1
-        with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
+        run: |
+          curl -L https://github.com/hugorut/infracost/releases/download/v0.9.21/infracost-linux-amd64 -o /usr/local/bin/infracost
+          chmod +x /usr/local/bin/infracost
+          infracost configure set api_key ${{ secrets.INFRACOST_API_KEY }}
+          echo "/usr/local/bin" >> $GITHUB_PATH
 
       - name: Generate Infracost JSON
-        run: infracost breakdown --path plan.json --format json --usage-file infracost-usage.yml --out-file /tmp/infracost.json
-        working-directory: ${{ env.working-directory }}
-
-      - name: Post Infracost comment
-        uses: infracost/actions/comment@v1
-        with:
-          path: /tmp/infracost.json
-          behavior: update
-
-      # Run Open Policy Agent
-      - name: Setup OPA
-        uses: open-policy-agent/setup-opa@v1
-
-      - name: Run OPA
-        run: opa eval --input /tmp/infracost.json -d cost-policy.rego --format pretty "data.infracost.deny" | tee /tmp/opa.out
-
-      - name: Check Policies
         run: |
-          denyReasons=$(</tmp/opa.out)
-          if [ "$denyReasons" != "[]" ]; then
-            echo -e "::error::Cost policy check failed, please check with Alistair Scott before proceeding with the change:\n$denyReasons"
-            exit 1
-          else
-            echo "::info::Cost policy check passed."
-          fi
+          infracost breakdown \
+            --path ./terraform/plan.json \
+            --format json \
+            --usage-file infracost-usage.yml \
+            --out-file /tmp/infracost.json
+
+      # Post the comment
+      - name: Post Infracost comment
+        run: |
+          infracost comment github \
+              --pull-request ${{ env.PR_NUMBER }} \
+              --repo infracost/gh-actions-demo \
+              --github-token ${{ secrets.GITHUB_TOKEN }} \
+              --path /tmp/infracost.json \
+              --policy-path cost-policy.rego
