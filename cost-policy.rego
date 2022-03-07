@@ -2,7 +2,7 @@ package infracost
 
 # This policy who
 deny[out] {
-	maxDiff = 500.0
+	maxDiff = 1500.0
 
 	msg := sprintf(
 		"Total monthly cost diff must be less than $%.2f (actual diff is $%.2f)",
