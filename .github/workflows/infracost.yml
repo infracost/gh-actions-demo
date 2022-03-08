@@ -38,10 +38,11 @@ jobs:
 
       - name: Generate Infracost JSON
         run: |
-          infracost breakdown --path ./terraform/plan.json \
-            --format json \ 
+          infracost breakdown \
+            --path ./terraform/plan.json \
+            --format json \
             --usage-file infracost-usage.yml \
-            --out-file /tmp/infracost.json 
+            --out-file /tmp/infracost.json
 
       # Post the comment
       - name: Post Infracost comment
@@ -51,4 +52,4 @@ jobs:
               --repo infracost/gh-actions-demo \
               --github-token ${{ secrets.GITHUB_TOKEN }} \
               --path /tmp/infracost.json \
-              --policy-path cost-policy.rego 
+              --policy-path cost-policy.rego
