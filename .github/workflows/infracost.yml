@@ -33,8 +33,8 @@ jobs:
         run: |
           curl -L https://github.com/hugorut/infracost/releases/download/v0.9.21/infracost-linux-amd64 -o infracost
           chmod +x infracost
+          ./infracost configure set api_key ${{ secrets.INFRACOST_API_KEY }}
           echo "{path}" >> $GITHUB_PATH
-          infracost configure set api_key ${{ secrets.INFRACOST_API_KEY }}
 
       - name: Generate Infracost JSON
         run: |
