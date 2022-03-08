@@ -48,8 +48,10 @@ jobs:
       - name: Post Infracost comment
         run: |
           infracost comment github \
-              --pull-request ${{ github.event.number }} \
+              --pull-request $GITHUB_PR_NUMBER \
               --repo infracost/gh-actions-demo \
               --github-token ${{ secrets.GITHUB_TOKEN }} \
               --path /tmp/infracost.json \
               --policy-path cost-policy.rego
+        env:
+          GITHUB_PR_NUMBER: ${{github.event.pull_request.number}}
