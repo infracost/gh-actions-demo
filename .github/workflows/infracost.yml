@@ -4,6 +4,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: terraform
+      PR_NUMBER: ${{ github.event.pull_request.number }}
 
     name: Run Infracost
     steps:
@@ -48,10 +49,8 @@ jobs:
       - name: Post Infracost comment
         run: |
           infracost comment github \
-              --pull-request $GITHUB_PR_NUMBER \
+              --pull-request ${{ env.PR_NUMBER }} \
               --repo infracost/gh-actions-demo \
               --github-token ${{ secrets.GITHUB_TOKEN }} \
               --path /tmp/infracost.json \
               --policy-path cost-policy.rego
-        env:
-          GITHUB_PR_NUMBER: ${{github.event.pull_request.number}}
