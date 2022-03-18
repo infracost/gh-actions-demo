@@ -38,25 +38,18 @@ jobs:
         run: infracost breakdown --path plan.json --format json --usage-file infracost-usage.yml --out-file /tmp/infracost.json
         working-directory: ${{ env.working-directory }}
 
+      # See https://www.infracost.io/docs/features/cli_commands/#comment-on-pull-requests for other options.
       - name: Post Infracost comment
-        uses: infracost/actions/comment@v1
-        with:
-          path: /tmp/infracost.json
-          behavior: update
-
-      # Run Open Policy Agent
-      - name: Setup OPA
-        uses: open-policy-agent/setup-opa@v1
-
-      - name: Run OPA
-        run: opa eval --input /tmp/infracost.json -d cost-policy.rego --format pretty "data.infracost.deny" | tee /tmp/opa.out
-
-      - name: Check Policies
         run: |
-          denyReasons=$(</tmp/opa.out)
-          if [ "$denyReasons" != "[]" ]; then
-            echo -e "::error::Cost policy check failed, please check with Alistair Scott before proceeding with the change:\n$denyReasons"
-            exit 1
-          else
-            echo "::info::Cost policy check passed."
-          fi
+          # Posts a comment to the PR using the 'update' behavior.
+          # This creates a single comment and updates it. The "quietest" option.
+          # The other valid behaviors are:
+          #   delete-and-new - Delete previous comments and create a new one.
+          #   hide-and-new - Minimize previous comments and create a new one.
+          #   new - Create a new cost estimate comment on every push.
+          infracost comment github --path /tmp/infracost.json \
+                                   --repo $GITHUB_REPOSITORY \
+                                   --github-token ${{github.token}} \
+                                   --pull-request ${{github.event.pull_request.number}} \
+                                   --policy-path cost-policy.rego \
+                                   --behavior update
