@@ -7,36 +7,33 @@ jobs:
 
     name: Run Infracost
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      # Run Terraform
-      - name: Install terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_wrapper: false # This is recommended so the `terraform show` command outputs valid JSON
-
-      - name: Terraform init
-        run: terraform init
-        working-directory: ${{ env.working-directory }}
-
-      - name: Terraform plan
-        run: terraform plan -out tfplan.binary
-        working-directory: ${{ env.working-directory }}
-
-      - name: Terraform show
-        run: terraform show -json tfplan.binary > plan.json
-        working-directory: ${{ env.working-directory }}
-
-      # Run Infracost
       - name: Setup Infracost
-        uses: infracost/actions/setup@v1
+        uses: infracost/actions/setup@v2
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-      - name: Generate Infracost JSON
-        run: infracost breakdown --path plan.json --format json --usage-file infracost-usage.yml --out-file /tmp/infracost.json
-        working-directory: ${{ env.working-directory }}
+      - name: Checkout base branch
+        uses: actions/checkout@v2
+        with:
+          ref: '${{ github.event.pull_request.base.ref }}'
+
+      - name: Generate Infracost cost estimate baseline
+        run: |
+          infracost breakdown --path=terraform \
+                              --usage-file infracost-usage.yml \
+                              --format=json \
+                              --out-file=/tmp/infracost-base.json
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v2
+
+      - name: Run Infracost
+        run: |
+          infracost diff --path=terraform \
+                        --usage-file infracost-usage.yml \
+                        --format=json \
+                        --compare-to=/tmp/infracost-base.json \
+                        --out-file=/tmp/infracost.json
 
       # See https://www.infracost.io/docs/features/cli_commands/#comment-on-pull-requests for other options.
       - name: Post Infracost comment
