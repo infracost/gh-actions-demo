@@ -1,6 +1,6 @@
 # Infracost GitHub Actions Demo
 
-See [this pull request](https://github.com/infracost/gh-actions-demo/pull/55) for the demo.
+See [the open pull request](https://github.com/infracost/gh-actions-demo/pulls) for the demo.
 
 The [Infracost GitHub Actions](https://github.com/infracost/actions) can be used to show cost estimates in pull requests for Terraform.
 
