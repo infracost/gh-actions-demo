@@ -11,6 +11,7 @@ jobs:
         uses: infracost/actions/setup@v2
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
+          version: 0.10.3
 
       - name: Checkout base branch
         uses: actions/checkout@v2
