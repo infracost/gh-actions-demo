@@ -1,16 +1,21 @@
-on: [pull_request]
+on: [ pull_request ]
+
 jobs:
   infracost:
     runs-on: ubuntu-latest
     env:
       working-directory: terraform
+      INFRACOST_DASHBOARD_ENDPOINT: https://dashboard.dev.infracost.io
+      INFRACOST_PRICING_API_ENDPOINT: https://pricing.api.dev.infracost.io
+      INFRACOST_DASHBOARD_API_ENDPOINT: https://dashboard.api.dev.infracost.io
 
     name: Run Infracost
     steps:
       - name: Setup Infracost
         uses: infracost/actions/setup@v2
         with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
+          api-key: ${{ secrets.DEV_INFRACOST_API_KEY }}
+          pricing-api-endpoint: https://pricing.api.dev.infracost.io
 
       - name: Checkout base branch
         uses: actions/checkout@v2
