@@ -2,15 +2,11 @@ on: [pull_request]
 jobs:
   infracost:
     runs-on: ubuntu-latest
-    env:
-      working-directory: terraform
 
     name: Run Infracost
     steps:
       - name: Setup Infracost
-        uses: infracost/actions/setup@v2
-        with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
+        run: ./infracost configure set api_key ${{ secrets.INFRACOST_API_KEY }}
 
       - name: Checkout base branch
         uses: actions/checkout@v2
@@ -19,7 +15,7 @@ jobs:
 
       - name: Generate Infracost cost estimate baseline
         run: |
-          infracost breakdown --path=terraform \
+          ./infracost breakdown --path=terraform \
                               --usage-file infracost-usage.yml \
                               --format=json \
                               --out-file=/tmp/infracost-base.json
@@ -29,7 +25,7 @@ jobs:
 
       - name: Run Infracost
         run: |
-          infracost diff --path=terraform \
+          ./infracost diff --path=terraform \
                         --usage-file infracost-usage.yml \
                         --format=json \
                         --compare-to=/tmp/infracost-base.json \
@@ -44,7 +40,7 @@ jobs:
           #   delete-and-new - Delete previous comments and create a new one.
           #   hide-and-new - Minimize previous comments and create a new one.
           #   new - Create a new cost estimate comment on every push.
-          infracost comment github --path /tmp/infracost.json \
+          ./infracost comment github --path /tmp/infracost.json \
                                    --repo $GITHUB_REPOSITORY \
                                    --github-token ${{github.token}} \
                                    --pull-request ${{github.event.pull_request.number}} \
