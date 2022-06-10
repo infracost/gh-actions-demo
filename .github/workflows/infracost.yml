@@ -9,6 +9,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: '${{ github.event.pull_request.base.ref }}'
+      - name: Checkout PR branch
+        uses: actions/checkout@v2
 
       - name: Setup Infracost
         run: |
@@ -20,18 +22,7 @@ jobs:
           ./infracost breakdown --path=terraform \
                               --usage-file infracost-usage.yml \
                               --format=json \
-                              --out-file=/tmp/infracost-base.json
-
-      - name: Checkout PR branch
-        uses: actions/checkout@v2
-
-      - name: Run Infracost
-        run: |
-          ./infracost diff --path=terraform \
-                        --usage-file infracost-usage.yml \
-                        --format=json \
-                        --compare-to=/tmp/infracost-base.json \
-                        --out-file=/tmp/infracost.json
+                              --out-file=/tmp/infracost.json
 
       # See https://www.infracost.io/docs/features/cli_commands/#comment-on-pull-requests for other options.
       - name: Post Infracost comment
