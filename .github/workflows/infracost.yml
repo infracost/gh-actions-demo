@@ -8,9 +8,10 @@ jobs:
     name: Run Infracost
     steps:
       - name: Setup Infracost
-        uses: infracost/actions/setup@v2
-        with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
+        run: |
+          curl -o /tmp/infracost https://infracost-public-dumps.s3.amazonaws.com/builds/json/infracost-linux-amd64 
+          chmod +x /tmp/infracost
+          /tmp/infracost configure set api_key ${{ secrets.INFRACOST_API_KEY }}
 
       - name: Checkout base branch
         uses: actions/checkout@v2
@@ -19,7 +20,7 @@ jobs:
 
       - name: Generate Infracost cost estimate baseline
         run: |
-          infracost breakdown --path=terraform \
+          /tmp/infracost breakdown --path=terraform \
                               --usage-file infracost-usage.yml \
                               --format=json \
                               --out-file=/tmp/infracost-base.json
@@ -29,24 +30,16 @@ jobs:
 
       - name: Run Infracost
         run: |
-          infracost diff --path=terraform \
+          /tmp/infracost diff --path=terraform \
                         --usage-file infracost-usage.yml \
                         --format=json \
                         --compare-to=/tmp/infracost-base.json \
                         --out-file=/tmp/infracost.json
 
       # See https://www.infracost.io/docs/features/cli_commands/#comment-on-pull-requests for other options.
-      - name: Post Infracost comment
+      - name: Show json metadata
         run: |
-          # Posts a comment to the PR using the 'update' behavior.
-          # This creates a single comment and updates it. The "quietest" option.
-          # The other valid behaviors are:
-          #   delete-and-new - Delete previous comments and create a new one.
-          #   hide-and-new - Minimize previous comments and create a new one.
-          #   new - Create a new cost estimate comment on every push.
-          infracost comment github --path /tmp/infracost.json \
-                                   --repo $GITHUB_REPOSITORY \
-                                   --github-token ${{github.token}} \
-                                   --pull-request ${{github.event.pull_request.number}} \
-                                   --behavior update
-                                   # --policy-path cost-policy.rego TODO add this back when OPA has fixed https://github.com/open-policy-agent/opa/issues/4610
+          echo "run breakdown on master"
+          cat /tmp/infracost-base.json | jq ".projects[0].metadata"
+          echo "run diff on branch"
+          cat /tmp/infracost.json | jq ".projects[0].metadata"
