@@ -4,13 +4,18 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: terraform
+      INFRACOST_DASHBOARD_API_ENDPOINT: https://dashboard.api.dev.infracost.io
+      INFRACOST_DASHBOARD_ENDPOINT: https://dashboard.dev.infracost.io
+      INFRACOST_DEFAULT_PRICING_API_ENDPOINT: https://pricing.api.dev.infracost.io
+      INFRACOST_PRICING_API_ENDPOINT: https://pricing.api.dev.infracost.io
+      INFRACOST_ENABLE_DASHBOARD: true
 
     name: Run Infracost
     steps:
       - name: Setup Infracost
         uses: infracost/actions/setup@v2
         with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
+          api-key: ${{ secrets.INFRACOST_API_KEY_ALISTAIR_TEST }}
 
       - name: Checkout base branch
         uses: actions/checkout@v2
