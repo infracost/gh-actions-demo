@@ -13,10 +13,9 @@ jobs:
     name: Run Infracost
     steps:
       - name: Setup Infracost
-        run: |
-          curl -o /tmp/infracost https://infracost-public-dumps.s3.amazonaws.com/builds/json/infracost-linux-amd64
-          chmod +x /tmp/infracost
-          /tmp/infracost configure set api_key ${{ secrets.INFRACOST_API_KEY_ALISTAIR_TEST }}
+        uses: infracost/actions/setup@v2
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY_ALISTAIR_TEST }}
 
       - name: Checkout base branch
         uses: actions/checkout@v2
@@ -25,7 +24,7 @@ jobs:
 
       - name: Generate Infracost cost estimate baseline
         run: |
-          /tmp/infracost breakdown --path=terraform \
+          infracost breakdown --path=terraform \
                               --usage-file infracost-usage.yml \
                               --format=json \
                               --out-file=/tmp/infracost-base.json
@@ -35,7 +34,7 @@ jobs:
 
       - name: Run Infracost
         run: |
-          /tmp/infracost diff --path=terraform \
+          infracost diff --path=terraform \
                         --usage-file infracost-usage.yml \
                         --format=json \
                         --compare-to=/tmp/infracost-base.json \
@@ -50,7 +49,7 @@ jobs:
           #   delete-and-new - Delete previous comments and create a new one.
           #   hide-and-new - Minimize previous comments and create a new one.
           #   new - Create a new cost estimate comment on every push.
-          /tmp/infracost comment github --path /tmp/infracost.json \
+          infracost comment github --path /tmp/infracost.json \
                                    --repo $GITHUB_REPOSITORY \
                                    --github-token ${{github.token}} \
                                    --pull-request ${{github.event.pull_request.number}} \
