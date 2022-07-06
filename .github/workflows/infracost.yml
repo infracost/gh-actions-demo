@@ -29,6 +29,7 @@ jobs:
 
       - name: Run Infracost
         run: |
+          INFRACOST_ENABLE_CLOUD=true \
           infracost diff --path=terraform \
                         --usage-file infracost-usage.yml \
                         --format=json \
