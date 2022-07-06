@@ -19,7 +19,7 @@ jobs:
 
       - name: Generate Infracost cost estimate baseline
         run: |
-          infracost breakdown --path=terraform \
+          infracost breakdown --path=terraform --project-name="Infracost change demo" \
                               --usage-file infracost-usage.yml \
                               --format=json \
                               --out-file=/tmp/infracost-base.json
@@ -29,7 +29,8 @@ jobs:
 
       - name: Run Infracost
         run: |
-          infracost diff --path=terraform \
+          INFRACOST_ENABLE_CLOUD=true \
+          infracost diff --path=terraform --project-name="Infracost change demo" \
                         --usage-file infracost-usage.yml \
                         --format=json \
                         --compare-to=/tmp/infracost-base.json \
