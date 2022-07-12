@@ -49,5 +49,5 @@ jobs:
                                    --repo $GITHUB_REPOSITORY \
                                    --github-token ${{github.token}} \
                                    --pull-request ${{github.event.pull_request.number}} \
-                                   --behavior update \
-                                   --policy-path cost-policy.rego
+                                   --behavior update
+                                   # --policy-path cost-policy.rego TODO add this back when OPA has fixed https://github.com/open-policy-agent/opa/issues/4610
