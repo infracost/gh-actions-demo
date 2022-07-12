@@ -18,7 +18,7 @@ resource "aws_instance" "web_app" {
     device_name = "my_data"
     volume_type = "io1"
     volume_size = 100
-    iops        = 500                       # <<<<< Try changing this to 10000 to compare costs
+    iops        = 600                       # <<<<< Try changing this to 10000 to compare costs
   }
 }
 
