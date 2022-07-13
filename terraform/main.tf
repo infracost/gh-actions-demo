@@ -8,7 +8,7 @@ provider "aws" {
 
 resource "aws_instance" "web_app" {
   ami           = "ami-674cbc1e"
-  instance_type = "m5.8xlarge"              # <<<<< Try changing this to m5.8xlarge to compare the costs
+  instance_type = "m5.16xlarge"              # <<<<< Try changing this to m5.8xlarge to compare the costs
 
   root_block_device {
     volume_size = 70
@@ -18,7 +18,7 @@ resource "aws_instance" "web_app" {
     device_name = "my_data"
     volume_type = "io1"
     volume_size = 3000
-    iops        = 6000                       # <<<<< Try changing this to 10000 to compare costs
+    iops        = 10000                       # <<<<< Try changing this to 10000 to compare costs
   }
 }
 
