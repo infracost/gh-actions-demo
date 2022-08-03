@@ -2,9 +2,9 @@
 # describe other options for 'on', 'pull_request' is a good default.
 on: [pull_request]
 env:
-    # If you use private modules you'll need this env variable to use
-    # the same ssh-agent socket value across all jobs & steps.
-    SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  # If you use private modules you'll need this env variable to use
+  # the same ssh-agent socket value across all jobs & steps.
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 jobs:
   infracost:
     name: Infracost
@@ -12,6 +12,11 @@ jobs:
 
     env:
       TF_ROOT: terraform
+      # This instructs the CLI to send cost estimates to Infracost Cloud. Our SaaS product
+      #   complements the open source CLI by giving teams advanced visibility and controls.
+      #   The cost estimates are transmitted in JSON format and do not contain any cloud
+      #   credentials or secrets (see https://infracost.io/docs/faq/ for more information).
+      INFRACOST_ENABLE_CLOUD: true
       # If you're using Terraform Cloud/Enterprise and have variables or private modules stored
       # on there, specify the following to automatically retrieve the variables:
       #   INFRACOST_TERRAFORM_CLOUD_TOKEN: ${{ secrets.TFC_TOKEN }}
@@ -45,8 +50,6 @@ jobs:
       - name: Generate Infracost cost estimate baseline
         run: |
           infracost breakdown --path=${TF_ROOT} \
-                              --usage-file=infracost-usage.yml \
-                              --project-name="Infracost demo" \
                               --format=json \
                               --out-file=/tmp/infracost-base.json
 
@@ -58,8 +61,6 @@ jobs:
       - name: Generate Infracost diff
         run: |
           infracost diff --path=${TF_ROOT} \
-                          --usage-file=infracost-usage.yml \
-                          --project-name="Infracost demo" \
                           --format=json \
                           --compare-to=/tmp/infracost-base.json \
                           --out-file=/tmp/infracost.json
@@ -71,14 +72,10 @@ jobs:
       #   hide-and-new - Minimize previous comments and create a new one.
       #   new - Create a new cost estimate comment on every push.
       # See https://www.infracost.io/docs/features/cli_commands/#comment-on-pull-requests for other options.
-      # The INFRACOST_ENABLE_CLOUD​=true section instructs the CLI to send its JSON output to Infracost Cloud.
-      #   This SaaS product gives you visibility across all changes in a dashboard. The JSON output does not
-      #   contain any cloud credentials or secrets.
       - name: Post Infracost comment
         run: |
-            INFRACOST_ENABLE_CLOUD=true infracost comment github --path=/tmp/infracost.json \
-                                      --repo=$GITHUB_REPOSITORY \
-                                      --github-token=${{github.token}} \
-                                      --pull-request=${{github.event.pull_request.number}} \
-                                      --behavior=update
-                                      # --policy-path=cost-policy.rego # TODO add this back when OPA has fixed https://github.com/open-policy-agent/opa/issues/4610
+            infracost comment github --path=/tmp/infracost.json \
+                                     --repo=$GITHUB_REPOSITORY \
+                                     --github-token=${{github.token}} \
+                                     --pull-request=${{github.event.pull_request.number}} \
+                                     --behavior=update
