@@ -77,3 +77,12 @@ jobs:
                                      --github-token=${{github.token}} \
                                      --pull-request=${{github.event.pull_request.number}} \
                                      --behavior=update
+
+on:
+  pull_request:
+    types: closed
+jobs:
+  infracost-update-pr-status:
+    - name: test
+      run: |
+        echo "Updating status of ${{github.event.pull_request.number}}"
