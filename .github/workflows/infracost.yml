@@ -2,7 +2,7 @@
 # describe other options for 'on', 'pull_request' is a good default.
 on:
   pull_request:
-    types: [opened, closed]
+    types: [opened, edited, synchronize, closed]
   push:
     branches:
       - master
@@ -16,11 +16,11 @@ jobs:
   # This stage runs the Infracost CLI and posts the pull request comment
   infracost-pull-request-checks:
     name: Infracost Pull Request Checks
-    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize')
+    if: github.event_name == 'pull_request' # && (github.event.action == 'opened' || github.event.action == 'synchronize')
     runs-on: ubuntu-latest
     steps:
     - run: |
-          echo "PR comment"
+          echo "PR comment ${{ github.event.action }}"
 
     # permissions:
     #   contents: read
