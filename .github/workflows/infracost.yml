@@ -106,4 +106,3 @@ jobs:
     steps:
     - run: |
         echo "Updating default branch"
-
