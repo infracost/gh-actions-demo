@@ -117,7 +117,7 @@ jobs:
     steps:
     - run: |
         PR_STATUS="MERGED"
-        if [[ ${{ github.event.pull_request.merged }} = false ]; then PR_STATUS="CLOSED"; fi
+        if [[ ${{ github.event.pull_request.merged }} = false ]]; then PR_STATUS="CLOSED"; fi
 
         echo "Updating status of ${{ github.event.pull_request.html_url }} to $PR_STATUS"
         curl \
