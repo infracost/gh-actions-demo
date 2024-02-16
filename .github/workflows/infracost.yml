@@ -119,12 +119,12 @@ jobs:
         PR_STATUS="MERGED"
         if [[ "${{ github.event.pull_request.merged }}" = false ]; then PR_STATUS="CLOSED"; fi
 
-        echo "Updating status of PR ${{ github.event.pull_request.number }} to $PR_STATUS"
+        echo "Updating status of ${{ github.event.pull_request.html_url }} to $PR_STATUS"
         curl \
           --request POST \
           --header "Content-Type: application/json" \
           --header "X-API-Key: $INFRACOST_API_KEY" \
-          --data "{ \"query\": \"mutation {updatePullRequestStatus( url: \\\"${{ github.event.pull_request.html_url }}\\\", status: ${PR_STATUS} )}\" }" \
+          --data "{ \"query\": \"mutation {updatePullRequestStatus( url: \"${{ github.event.pull_request.html_url }}\", status: $PR_STATUS )}\" }" \
           "https://dashboard.api.infracost.io/graphql";
       env:
         INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
