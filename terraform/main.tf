@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "my_web_app" {
-  instance_type = "m3.large"     # <<<<< Try changing this to m5.xlarge to compare the costs
+  instance_type = "m3.xlarge"     # <<<<< Try changing this to m5.xlarge to compare the costs
 
   tags = {
     Environment = "production"

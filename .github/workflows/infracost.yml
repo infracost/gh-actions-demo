@@ -24,9 +24,9 @@ jobs:
       contents: read
       pull-requests: write # Required to post comments
     # env:
-      ## If you store Terraform variables or modules in a 3rd party such as (e.g. TFC or Spacelift),
-      ## specify the following so Infracost can automatically retrieve them.
-      ## See https://www.infracost.io/docs/features/terraform_modules/#registry-modules for details.
+      # If you store Terraform variables or modules in a 3rd party such as TFC or Spacelift,
+      # specify the following so Infracost can automatically retrieve them.
+      # See https://www.infracost.io/docs/features/terraform_modules/#registry-modules for details.
       #   INFRACOST_TERRAFORM_CLOUD_TOKEN: ${{ secrets.TFC_TOKEN }}
       #   INFRACOST_TERRAFORM_CLOUD_HOST: app.terraform.io
     steps:
@@ -88,6 +88,8 @@ jobs:
                                      --behavior=update
 
   infracost-default-branch-update:
+    # If you use private modules, or store Terraform variables or modules in a 3rd party
+    # such as TFC or Spacelift, include the same steps/variables as the infracost-pull-request-checks job
     name: Infracost Default Branch Update
     if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'master')
     runs-on: ubuntu-latest
