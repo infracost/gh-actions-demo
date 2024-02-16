@@ -115,7 +115,8 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
-    - run: |
+    - name: Infracost PR Status Update
+      run: |
         PR_STATUS="MERGED"
         if [[ ${{ github.event.pull_request.merged }} = false ]]; then PR_STATUS="CLOSED"; fi
 
